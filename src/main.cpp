@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <random>
 #include <string>
+#include <unistd.h>
 
 #include <SFML/Graphics.hpp>
 #include "Particle.hpp"
@@ -18,6 +19,7 @@ int main(int argc, char* argv[])
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Particle Motion", sf::Style::Default);
 
+    sleep(25);
     sf::Clock deltaTime;
     float dt = 0.00000001;
 
