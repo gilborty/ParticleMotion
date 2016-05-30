@@ -5,4 +5,4 @@ Will be consistently updating this repo with new experiments with particle motio
 
 Typical build steps for CMake.
 
-[Animation](resources/animation.gif)
+![Animation](resources/animation.gif)
