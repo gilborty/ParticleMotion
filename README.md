@@ -5,4 +5,7 @@ Will be consistently updating this repo with new experiments with particle motio
 
 Typical build steps for CMake.
 
+# Animation
+Here is a very simple animation I made during the first experiment. I think this project has turned into an exercise on how to make .gifs correctly
+
 ![Animation](resources/animation.gif)
