@@ -76,12 +76,10 @@ int main(int argc, char* argv[])
         }
 
         window.display();
-        sf::Image image = window.capture();
-        std::string imagePath = "images/image" + std::to_string(imageCounter) + ".jpg";
-
-        image.saveToFile(imagePath);
-
-
+        
+        //sf::Image image = window.capture();
+        //std::string imagePath = "images/image" + std::to_string(imageCounter) + ".jpg";
+        //image.saveToFile(imagePath);
 
         dt = deltaTime.restart().asSeconds();
     }
