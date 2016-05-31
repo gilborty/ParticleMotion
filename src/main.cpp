@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     for(size_t i = 0; i < numberOfParticles; ++i)
     {
         //Set the radius
-        auto radius = 3.0;
+        auto radius = MapToRange(startingDist(gen), 0.0, 1.0, 1.0, 5.0);
 
         //Get random intial positions
         sf::Vector2f initialPosition;
