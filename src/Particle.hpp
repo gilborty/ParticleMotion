@@ -28,6 +28,7 @@ class Particle
 public:
 
     Particle();
+    Particle(const Position& position, const Velocity& velocity);
 
     void updatePosition(const float &dt);
 

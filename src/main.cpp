@@ -8,7 +8,9 @@
 
 std::random_device randDevice;
 std::mt19937 gen(randDevice());
+
 std::uniform_real_distribution<> dist(0,5);
+std::uniform_real_distribution<> startingDist(0, 1);
 
 float MapToRange(float valueToBeMapped, float lowInputRange = 0.0, int highInputRange = 600.0, int lowDestRange = 0.0, int highDestRange = 255.0)
 {
@@ -22,25 +24,29 @@ int main(int argc, char* argv[])
     sf::Clock deltaTime;
     float dt = 0.00000001;
 
-    int numberOfParticles = 800;
+    int numberOfParticles = 1000;
     std::vector<Particle> particles;
 
     for(size_t i = 0; i < numberOfParticles; ++i)
     {
-        Particle particle;
         Position initialPosition;
+        Velocity initialVelocity;
 
-        initialPosition.xPosition = (window.getSize().x / numberOfParticles)*i;
-        initialPosition.yPosition = 0.0f;
-        particle.setPosition(initialPosition);
+        //Get random intial positions
+        initialPosition.xPosition = std::round(MapToRange(startingDist(gen),0.0,1.0,0.0,800.0));
+        initialPosition.yPosition = std::round(MapToRange(startingDist(gen),0.0,1.0,0.0,600.0));
+
+        //Get random intial velocity
+        initialVelocity.xVelocity = MapToRange(startingDist(gen),0.0,1.0,-20.0,20.0);
+        initialVelocity.yVelocity = MapToRange(startingDist(gen),0.0,1.0,-20.0,20.0);
+
+        Particle particle(initialPosition, initialVelocity);
 
         particle.setFillColor(sf::Color(0,0,100));
         auto gravFactor = dist(gen);
         float gravity = static_cast<float>(-9.8*gravFactor);
 
         particle.setGravity(gravity);
-
-        //particle.setVelocity({gravFactor*2.0,0.0});
 
         particle.setWalls(window.getSize());
         particles.push_back(particle);
