@@ -4,112 +4,61 @@
 
 #include <SFML/Graphics.hpp>
 
-//I should probably look into inheriting from sf::CircleShape because this seems like a lot of repeated code
-struct Position
-{
-    float xPosition;
-    float yPosition;
-};
-
-struct Velocity
-{
-    float xVelocity;
-    float yVelocity;
-};
-
-struct Force
-{
-    float xForce;
-    float yForce;
-};
-
-class Particle
+#define OUTPUT(x) std::cout << #x"=" << x << std::endl
+class Particle : public sf::CircleShape
 {
 public:
+    Particle(const float& radius, const sf::Vector2f& pos, const sf::Vector2f& vel, const float& mass, const float& gravity);
 
-    Particle();
-    Particle(const Position& position, const Velocity& velocity);
-
+    //Methods
     void updatePosition(const float &dt);
 
+    //Setters
+    void setGravity(const float& gravityIn)
+    {
+        m_gravity = gravityIn;
+    }
+    void setMass(const float& massIn)
+    {
+        m_mass = massIn;
+    }
+    void setVelocity(const sf::Vector2f& velocityIn)
+    {
+        m_velocity = velocityIn;
+    }
     void setWalls(const sf::Vector2u& walls)
     {
         m_walls = walls;
     }
 
-
-    void setMass(const float& massIn)
+    //Getters
+    float getGravity() const
     {
-        m_mass = massIn;
+        return m_gravity;
     }
-
-    void setPosition(const Position& positionIn)
-    {
-        m_position = positionIn;
-        m_particle.setPosition(m_position.xPosition, m_position.yPosition);
-    }
-
-    void setOutlineThickness(const float& outlineThicknessIn)
-    {
-        m_outlineThickness = outlineThicknessIn;
-    }
-
-    void setRadius(const float& radiusIn)
-    {
-        m_radius = radiusIn;
-        m_particle.setRadius(m_radius);
-    }
-
-    void setOutlineColor(const sf::Color& outlineColorIn)
-    {
-        m_outlineColor = outlineColorIn;
-    }
-
-    void setFillColor(const sf::Color& fillColorIn)
-    {
-        m_fillColor = fillColorIn;
-        m_particle.setFillColor(m_fillColor);
-    }
-
-    void setVelocity(const Velocity& velocityIn)
-    {
-        m_velocity = velocityIn;
-    }
-
-    void setGravity(const float& gravityIn)
-    {
-        m_gravity = gravityIn;
-    }
-
-    sf::CircleShape getParticle() const
-    {
-        return m_particle;
-    }
-
-    Position getPosition() const
-    {
-        return m_position;
-    }
-
     float getMass() const
     {
         return m_mass;
     }
+    sf::Vector2f getVelocity() const
+    {
+        return m_velocity;
+    }
+    sf::Vector2u getWalls() const
+    {
+        return m_walls;
+    }
 
 private:
-    float m_gravity;
-    float m_radius;
+
+    //Attributes
     float m_mass;
+    float m_gravity;
+    sf::Vector2f m_velocity;
+
+    //Collision checking attributes
     sf::Vector2u m_walls;
-    Position m_position;
-    Velocity m_velocity;
 
-    sf::CircleShape m_particle;
-
-    float m_outlineThickness;
-    sf::Color m_outlineColor;
-    sf::Color m_fillColor;
-
-    float CalculateNewPosition(const float& forceIn, const float& velocityIn, const float& postion, const float& dt);
+    //Methods
     void CheckCollisions();
 };

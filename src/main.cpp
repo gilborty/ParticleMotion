@@ -12,6 +12,9 @@ std::mt19937 gen(randDevice());
 std::uniform_real_distribution<> dist(0,5);
 std::uniform_real_distribution<> startingDist(0, 1);
 
+const float STARTING_VEL = 100.0;
+
+
 float MapToRange(float valueToBeMapped, float lowInputRange = 0.0, int highInputRange = 600.0, int lowDestRange = 0.0, int highDestRange = 255.0)
 {
     return lowDestRange + ( valueToBeMapped - lowInputRange ) * ( highDestRange - lowDestRange ) / ( highInputRange - lowInputRange );
@@ -24,30 +27,35 @@ int main(int argc, char* argv[])
     sf::Clock deltaTime;
     float dt = 0.00000001;
 
-    int numberOfParticles = 1000;
+    int numberOfParticles = 100;
     std::vector<Particle> particles;
 
     for(size_t i = 0; i < numberOfParticles; ++i)
     {
-        Position initialPosition;
-        Velocity initialVelocity;
+        //Set the radius
+        auto radius = 3.0;
 
         //Get random intial positions
-        initialPosition.xPosition = std::round(MapToRange(startingDist(gen),0.0,1.0,0.0,800.0));
-        initialPosition.yPosition = std::round(MapToRange(startingDist(gen),0.0,1.0,0.0,600.0));
+        sf::Vector2f initialPosition;
+        initialPosition.x = std::round(MapToRange(startingDist(gen),0.0,1.0,0.0,800.0));
+        initialPosition.y = std::round(MapToRange(startingDist(gen),0.0,1.0,0.0,600.0));
 
         //Get random intial velocity
-        initialVelocity.xVelocity = MapToRange(startingDist(gen),0.0,1.0,-20.0,20.0);
-        initialVelocity.yVelocity = MapToRange(startingDist(gen),0.0,1.0,-20.0,20.0);
+        sf::Vector2f initialVelocity;
+        initialVelocity.x = MapToRange(startingDist(gen),0.0,1.0,-STARTING_VEL,STARTING_VEL);
+        initialVelocity.y = MapToRange(startingDist(gen),0.0,1.0,-STARTING_VEL,STARTING_VEL);
 
-        Particle particle(initialPosition, initialVelocity);
+        //Set the mass of the particle
+        auto mass = 10.0;
 
-        particle.setFillColor(sf::Color(0,0,100));
+        //Set the gravity
         auto gravFactor = dist(gen);
         float gravity = static_cast<float>(-9.8*gravFactor);
 
-        particle.setGravity(gravity);
+        //Create the particle
+        Particle particle(radius, initialPosition, initialVelocity, mass, gravity);
 
+        particle.setFillColor(sf::Color(0,0,100));
         particle.setWalls(window.getSize());
         particles.push_back(particle);
     }
@@ -75,10 +83,10 @@ int main(int argc, char* argv[])
             particle.updatePosition(dt);
             auto position = particle.getPosition();
 
-            auto redColorValue = MapToRange(position.yPosition);
+            auto redColorValue = MapToRange(position.y);
             particle.setFillColor(sf::Color(redColorValue, 0, 100));
 
-            window.draw(particle.getParticle());
+            window.draw(particle);
          }
 
         window.display();

@@ -1,47 +1,29 @@
 #include "Particle.hpp"
 
-Particle::Particle()
-    : m_radius(3.0)
-    , m_mass(10.0)
-    , m_position{}
-    , m_velocity{}
-    , m_gravity(-9.8)
-    , m_outlineThickness(0.0)
-    , m_outlineColor(sf::Color::Blue)
-    , m_fillColor(sf::Color::Blue)
-    , m_particle(m_radius)
+Particle::Particle(const float& radius, const sf::Vector2f &pos, const sf::Vector2f &vel, const float &mass, const float &gravity)
+    : Particle::CircleShape(radius)
+    , m_gravity(gravity)
+    , m_mass(mass)
+    , m_velocity(vel)
 {
-    m_particle.setOutlineThickness(m_outlineThickness);
-    m_particle.setOutlineColor(m_outlineColor);
-    m_particle.setFillColor(m_fillColor);
-    m_particle.setPosition(m_position.xPosition, m_position.yPosition);
-}
+    this->setPosition(pos);
 
-Particle::Particle(const Position& position, const Velocity& velocity)
-    : m_radius(1.0)
-    , m_mass(10.0)
-    , m_position(position)
-    , m_velocity(velocity)
-    , m_gravity(-9.8)
-    , m_outlineThickness(0.0)
-    , m_outlineColor(sf::Color::Blue)
-    , m_fillColor(sf::Color::Blue)
-    , m_particle(m_radius)
-{
-    m_particle.setOutlineThickness(m_outlineThickness);
-    m_particle.setOutlineColor(m_outlineColor);
-    m_particle.setFillColor(m_fillColor);
-    m_particle.setPosition(m_position.xPosition, m_position.yPosition);
 }
 
 void Particle::updatePosition(const float &dt)
 {
-    m_position.xPosition = m_position.xPosition + (m_velocity.xVelocity*dt);
-    m_position.yPosition = m_position.yPosition + (m_velocity.yVelocity*dt);
+    float xPos = this->getPosition().x;
+    float yPos = this->getPosition().y;
 
-    m_velocity.yVelocity = m_velocity.yVelocity - (m_gravity*dt);
+    float xVel = this->getVelocity().x;
+    float yVel = this->getVelocity().y;
 
-    m_particle.setPosition(m_position.xPosition,m_position.yPosition);
+    xPos = xPos + (xVel*dt);
+    yPos = yPos + (yVel*dt);
+
+    yVel = yVel - (m_gravity*dt);
+
+    this->setPosition(xPos, yPos);
 
     //Check collisions
     CheckCollisions();
@@ -49,31 +31,31 @@ void Particle::updatePosition(const float &dt)
 
 void Particle::CheckCollisions()
 {
+    float xPos = this->getPosition().x;
+    float yPos = this->getPosition().y;
+
+    float xVel = this->getVelocity().x;
+    float yVel = this->getVelocity().y;
+
     //Check left wall contact
-    if(m_position.xPosition < 0)
+    if(xPos < 0)
     {
-        m_velocity.xVelocity = std::abs(m_velocity.xVelocity);
+        m_velocity.x = std::abs(xVel);
     }
     //Check right wall contact
-    if(m_position.xPosition > m_walls.x)
+    if(xPos > m_walls.x - this->getRadius())
     {
-        m_velocity.xVelocity = -std::abs(m_velocity.xVelocity);
+        m_velocity.x = -std::abs(xVel);
     }
 
     //Check cieling
-    if(m_position.yPosition < 0)
+    if(yPos < 0)
     {
-        m_velocity.yVelocity = std::abs(m_velocity.yVelocity);
+        m_velocity.y = std::abs(yVel);
     }
     //Check floor
-    if(m_position.yPosition > m_walls.y)
+    if(yPos > m_walls.y- this->getRadius())
     {
-        m_velocity.yVelocity = -std::abs(m_velocity.yVelocity);
+        m_velocity.y = -std::abs(yVel);
     }
-
-}
-
-float Particle::CalculateNewPosition(const float &forceIn, const float& velocityIn, const float& postion, const float &dt)
-{
-    return (0.5*(forceIn/m_mass)*std::pow(dt,2)) + (velocityIn*dt) + postion;
 }
