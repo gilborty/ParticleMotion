@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <cmath>
 #include <iostream>
 
@@ -29,7 +29,12 @@ public:
 
     Particle();
 
-    void updatePosition(const Force& forceIn, const float &dt);
+    void updatePosition(const float &dt);
+
+    void setWalls(const sf::Vector2u& walls)
+    {
+        m_walls = walls;
+    }
 
 
     void setMass(const float& massIn)
@@ -94,6 +99,7 @@ private:
     float m_gravity;
     float m_radius;
     float m_mass;
+    sf::Vector2u m_walls;
     Position m_position;
     Velocity m_velocity;
 
@@ -104,4 +110,5 @@ private:
     sf::Color m_fillColor;
 
     float CalculateNewPosition(const float& forceIn, const float& velocityIn, const float& postion, const float& dt);
+    void CheckCollisions();
 };

@@ -18,22 +18,42 @@ Particle::Particle()
     m_particle.setOrigin(m_position.xPosition, m_position.yPosition);
 }
 
-void Particle::updatePosition(const Force& forceIn, const float &dt)
+void Particle::updatePosition(const float &dt)
 {
-    //This can perhaps be faster (or at least less cluttered) if we use sf::Vector2f to represent forces
-    Position newPosition;
-    auto previousPosition = m_position;
+    m_position.xPosition = m_position.xPosition + (m_velocity.xVelocity*dt);
+    m_position.yPosition = m_position.yPosition + (m_velocity.yVelocity*dt);
 
-    newPosition.xPosition = CalculateNewPosition(forceIn.xForce, m_velocity.xVelocity, m_position.xPosition, dt);
-    std::cout << "New POs: " << newPosition.xPosition << std::endl;
-    newPosition.yPosition = CalculateNewPosition(forceIn.yForce, m_velocity.yVelocity, m_position.xPosition, dt);
+    m_velocity.yVelocity = m_velocity.yVelocity - (m_gravity*dt);
 
-    m_position = newPosition;
+    m_particle.setPosition(m_position.xPosition,m_position.yPosition);
 
-    m_particle.setPosition(m_position.xPosition, m_position.yPosition);
+    //Check collisions
+    CheckCollisions();
+}
 
-    m_velocity.xVelocity = (m_position.xPosition - previousPosition.xPosition)/dt;
-    m_velocity.yVelocity = (m_position.yPosition - previousPosition.yPosition)/dt;
+void Particle::CheckCollisions()
+{
+    //Check left wall contact
+    if(m_position.xPosition < 0)
+    {
+        m_velocity.xVelocity = std::abs(m_velocity.xVelocity);
+    }
+    //Check right wall contact
+    if(m_position.xPosition > m_walls.x)
+    {
+        m_velocity.xVelocity = -std::abs(m_velocity.xVelocity);
+    }
+
+    //Check cieling
+    if(m_position.yPosition < 0)
+    {
+        m_velocity.yVelocity = std::abs(m_velocity.yVelocity);
+    }
+    //Check floor
+    if(m_position.yPosition > m_walls.y)
+    {
+        m_velocity.yVelocity = -std::abs(m_velocity.yVelocity);
+    }
 
 }
 

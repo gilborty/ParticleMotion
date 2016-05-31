@@ -6,8 +6,6 @@
 #include <SFML/Graphics.hpp>
 #include "Particle.hpp"
 
-#define BIG_G 6.67e-11
-
 std::random_device randDevice;
 std::mt19937 gen(randDevice());
 std::uniform_real_distribution<> dist(0,5);
@@ -17,11 +15,6 @@ float MapToRange(float valueToBeMapped, float lowInputRange = 0.0, int highInput
     return lowDestRange + ( valueToBeMapped - lowInputRange ) * ( highDestRange - lowDestRange ) / ( highInputRange - lowInputRange );
 }
 
-float CalculateGravitationalForce(const float& massOne, const float& massTwo, const float& radius)
-{
-    return BIG_G * ((massOne - massTwo)/std::pow(radius,2));
-}
-
 int main(int argc, char* argv[])
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Particle Motion", sf::Style::Default);
@@ -29,14 +22,30 @@ int main(int argc, char* argv[])
     sf::Clock deltaTime;
     float dt = 0.00000001;
 
-    Particle blackHole;
-    blackHole.setMass(1e14);
-    blackHole.setRadius(10.0);
-    blackHole.setFillColor(sf::Color::Black);
-    blackHole.setOutlineColor(sf::Color::Black);
-    blackHole.setPosition({window.getSize().x/2.0,window.getSize().y/2.0});
+    int numberOfParticles = 800;
+    std::vector<Particle> particles;
 
-    Particle body;
+    for(size_t i = 0; i < numberOfParticles; ++i)
+    {
+        Particle particle;
+        Position initialPosition;
+
+        initialPosition.xPosition = (window.getSize().x / numberOfParticles)*i;
+        initialPosition.yPosition = 0.0f;
+        particle.setPosition(initialPosition);
+
+        particle.setFillColor(sf::Color(0,0,100));
+        auto gravFactor = dist(gen);
+        float gravity = static_cast<float>(-9.8*gravFactor);
+
+        particle.setGravity(gravity);
+
+        //particle.setVelocity({gravFactor*2.0,0.0});
+
+        particle.setWalls(window.getSize());
+        particles.push_back(particle);
+    }
+
 
     while(window.isOpen())
     {
@@ -53,50 +62,18 @@ int main(int argc, char* argv[])
                 window.close();
                 break;
             }
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-                Position updatedPos;
-                updatedPos.xPosition = blackHole.getPosition().xPosition - 10;
-                updatedPos.yPosition = blackHole.getPosition().yPosition;
-                blackHole.setPosition(updatedPos);
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-                Position updatedPos;
-                updatedPos.xPosition = blackHole.getPosition().xPosition + 10;
-                updatedPos.yPosition = blackHole.getPosition().yPosition;
-                blackHole.setPosition(updatedPos);
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            {
-                Position updatedPos;
-                updatedPos.yPosition = blackHole.getPosition().yPosition - 10;
-                updatedPos.xPosition = blackHole.getPosition().xPosition;
-                blackHole.setPosition(updatedPos);
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            {
-                Position updatedPos;
-                updatedPos.yPosition = blackHole.getPosition().yPosition + 10;
-                updatedPos.xPosition = blackHole.getPosition().xPosition;
-                blackHole.setPosition(updatedPos);
-            }
         }
 
-        Force newForce;
+        for(auto& particle : particles)
+        {
+            particle.updatePosition(dt);
+            auto position = particle.getPosition();
 
-        auto radiusX = std::abs(body.getPosition().xPosition - blackHole.getPosition().xPosition);
-        auto radiusY = std::abs(body.getPosition().yPosition - blackHole.getPosition().yPosition);
+            auto redColorValue = MapToRange(position.yPosition);
+            particle.setFillColor(sf::Color(redColorValue, 0, 100));
 
-        auto newForceX = -CalculateGravitationalForce(body.getMass(), blackHole.getMass(), radiusX);
-        auto newForceY = -CalculateGravitationalForce(body.getMass(), blackHole.getMass(), radiusY);
-
-        newForce = {newForceX, newForceY};
-
-        body.updatePosition(newForce, dt);
-
-        window.draw(body.getParticle());
-        window.draw(blackHole.getParticle());
+            window.draw(particle.getParticle());
+         }
 
         window.display();
 
