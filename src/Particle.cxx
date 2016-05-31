@@ -18,10 +18,25 @@ Particle::Particle()
     m_particle.setOrigin(m_position.xPosition, m_position.yPosition);
 }
 
-void Particle::updatePosition(const float &dt)
+void Particle::updatePosition(const Force& forceIn, const float &dt)
 {
-    m_position.yPosition = m_position.yPosition + m_velocity.yVelocity*dt;
-    m_velocity.yVelocity = m_velocity.yVelocity-m_gravity*dt;
+    //This can perhaps be faster (or at least less cluttered) if we use sf::Vector2f to represent forces
+    Position newPosition;
+    auto previousPosition = m_position;
+
+    newPosition.xPosition = CalculateNewPosition(forceIn.xForce, m_velocity.xVelocity, m_position.xPosition, dt);
+    newPosition.yPosition = CalculateNewPosition(forceIn.yForce, m_velocity.yVelocity, m_position.xPosition, dt);
+
+    m_position = newPosition;
 
     m_particle.setPosition(m_position.xPosition, m_position.yPosition);
+
+    m_velocity.xVelocity = (m_position.xPosition - previousPosition.xPosition)/dt;
+    m_velocity.yVelocity = (m_position.yPosition - previousPosition.yPosition)/dt;
+
+}
+
+float Particle::CalculateNewPosition(const float &forceIn, const float& velocityIn, const float& postion, const float &dt)
+{
+    return (0.5*(forceIn/m_mass)*std::pow(dt,2)) + (velocityIn*dt) + postion;
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 
 #include <SFML/Graphics.hpp>
 
@@ -14,13 +15,19 @@ struct Velocity
     float yVelocity;
 };
 
+struct Force
+{
+    float xForce;
+    float yForce;
+};
+
 class Particle
 {
 public:
 
     Particle();
 
-    void updatePosition(const float& dt);
+    void updatePosition(const Force& forceIn, const float& dt);
 
 
     void setMass(const float& massIn)
@@ -87,4 +94,6 @@ private:
     float m_outlineThickness;
     sf::Color m_outlineColor;
     sf::Color m_fillColor;
+
+    float CalculateNewPosition(const float& forceIn, const float& velocityIn, const float& dt);
 };
