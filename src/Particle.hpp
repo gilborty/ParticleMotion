@@ -1,8 +1,10 @@
 #pragma once
 #include <cmath>
+#include <iostream>
 
 #include <SFML/Graphics.hpp>
 
+//I should probably look into inheriting from sf::CircleShape because this seems like a lot of repeated code
 struct Position
 {
     float xPosition;
@@ -27,7 +29,7 @@ public:
 
     Particle();
 
-    void updatePosition(const Force& forceIn, const float& dt);
+    void updatePosition(const Force& forceIn, const float &dt);
 
 
     void setMass(const float& massIn)
@@ -38,6 +40,7 @@ public:
     void setPosition(const Position& positionIn)
     {
         m_position = positionIn;
+        m_particle.setPosition(m_position.xPosition, m_position.yPosition);
     }
 
     void setOutlineThickness(const float& outlineThicknessIn)
@@ -48,6 +51,7 @@ public:
     void setRadius(const float& radiusIn)
     {
         m_radius = radiusIn;
+        m_particle.setRadius(m_radius);
     }
 
     void setOutlineColor(const sf::Color& outlineColorIn)
@@ -81,6 +85,10 @@ public:
         return m_position;
     }
 
+    float getMass() const
+    {
+        return m_mass;
+    }
 
 private:
     float m_gravity;
@@ -95,5 +103,5 @@ private:
     sf::Color m_outlineColor;
     sf::Color m_fillColor;
 
-    float CalculateNewPosition(const float& forceIn, const float& velocityIn, const float& dt);
+    float CalculateNewPosition(const float& forceIn, const float& velocityIn, const float& postion, const float& dt);
 };

@@ -25,6 +25,7 @@ void Particle::updatePosition(const Force& forceIn, const float &dt)
     auto previousPosition = m_position;
 
     newPosition.xPosition = CalculateNewPosition(forceIn.xForce, m_velocity.xVelocity, m_position.xPosition, dt);
+    std::cout << "New POs: " << newPosition.xPosition << std::endl;
     newPosition.yPosition = CalculateNewPosition(forceIn.yForce, m_velocity.yVelocity, m_position.xPosition, dt);
 
     m_position = newPosition;
