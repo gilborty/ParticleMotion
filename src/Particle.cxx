@@ -7,7 +7,21 @@ Particle::Particle(const float& radius, const sf::Vector2f &pos, const sf::Vecto
     , m_velocity(vel)
 {
     this->setPosition(pos);
+}
 
+void Particle::incrementSpeed(const sf::Vector2f &deltaSpeed)
+{
+    float maxSpeed = 650;
+
+    this->m_velocity.x += deltaSpeed.x;
+    this->m_velocity.y += deltaSpeed.y;
+
+    auto absSpeed = std::sqrt(std::pow(this->m_velocity.x,2) + std::pow(this->m_velocity.y, 2));
+
+    if(absSpeed > maxSpeed)
+    {
+        absSpeed = maxSpeed;
+    }
 }
 
 void Particle::updatePosition(const float &dt)

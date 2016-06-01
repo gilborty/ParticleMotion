@@ -27,13 +27,14 @@ int main(int argc, char* argv[])
     sf::Clock deltaTime;
     float dt = 0.00000001;
 
-    int numberOfParticles = 100;
+    int numberOfParticles = 2000;
     std::vector<Particle> particles;
 
     for(size_t i = 0; i < numberOfParticles; ++i)
     {
         //Set the radius
-        auto radius = MapToRange(startingDist(gen), 0.0, 1.0, 1.0, 5.0);
+        //auto radius = MapToRange(startingDist(gen), 0.0, 1.0, 1.0, 5.0);
+        auto radius = 1.5;
 
         //Get random intial positions
         sf::Vector2f initialPosition;
@@ -49,8 +50,9 @@ int main(int argc, char* argv[])
         auto mass = 10.0;
 
         //Set the gravity
-        auto gravFactor = dist(gen);
-        float gravity = static_cast<float>(-9.8*gravFactor);
+        //auto gravFactor = dist(gen);
+        //float gravity = static_cast<float>(-9.8*gravFactor);
+        auto gravity = -9.8;
 
         //Create the particle
         Particle particle(radius, initialPosition, initialVelocity, mass, gravity);
@@ -63,7 +65,7 @@ int main(int argc, char* argv[])
 
     while(window.isOpen())
     {
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
 
         //Handle events
         sf::Event event;
@@ -75,6 +77,33 @@ int main(int argc, char* argv[])
             {
                 window.close();
                 break;
+            }
+            if(event.type == sf::Event::MouseButtonPressed)
+            {
+                for(auto& particle : particles)
+                {
+                    auto mousePos = sf::Mouse::getPosition();
+
+                    double distX = mousePos.x - particle.getPosition().x;
+                    double distY = mousePos.y - particle.getPosition().y;
+                    double dist = std::sqrt(std::pow(distX,2) + std::pow(distY,2));
+
+                    if(dist == 0)
+                    {
+                        dist = 1;
+                    }
+
+                    float speedInc = 100;
+
+                    float normDistX = distX / dist;
+                    float normDistY = distY / dist;
+
+                    sf::Vector2f newVelocity;
+                    newVelocity.x = (normDistX*speedInc);
+                    newVelocity.y = (normDistY*speedInc);
+
+                    particle.incrementSpeed(newVelocity);
+                }
             }
         }
 
@@ -90,7 +119,6 @@ int main(int argc, char* argv[])
          }
 
         window.display();
-
         dt = deltaTime.restart().asSeconds();
     }
 

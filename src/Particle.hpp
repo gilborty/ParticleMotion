@@ -12,6 +12,7 @@ public:
 
     //Methods
     void updatePosition(const float &dt);
+    void incrementSpeed(const sf::Vector2f& deltaSpeed);
 
     //Setters
     void setGravity(const float& gravityIn)
